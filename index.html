@@ -1,0 +1,206 @@
+﻿以下是一个基于HTML、CSS和JavaScript的简单Web版本实现：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>太空数学探险</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #000 url('https://img.freepik.com/free-vector/starry-night-sky_104785-319.jpg') no-repeat center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .difficulty-buttons button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #stars {
+            font-size: 24px;
+            margin: 10px;
+        }
+
+        .question {
+            font-size: 32px;
+            margin: 20px;
+            padding: 15px;
+            background: #1a237e;
+            border-radius: 5px;
+        }
+
+        input {
+            font-size: 24px;
+            width: 120px;
+            padding: 5px;
+            margin: 10px;
+        }
+
+        .buttons {
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #3f51b5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #283593;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🚀 太空数学探险</h1>
+        <div class="difficulty-buttons">
+            <button onclick="startGame('easy')">简单模式</button>
+            <button onclick="startGame('medium')">中等模式</button>
+            <button onclick="startGame('hard')">困难模式</button>
+        </div>
+        
+        <div id="stars">⭐ × 0</div>
+        <div class="question" id="question"></div>
+        <input type="number" step="0.01" id="answer" placeholder="输入答案">
+        <div class="buttons">
+            <button onclick="submitAnswer()">提交答案</button>
+            <button onclick="retry()">重试</button>
+        </div>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        let currentLevel = 1;
+        let stars = 0;
+        let difficulty = 'easy';
+        let currentProblem = {};
+
+        function generateProblem() {
+            const divisor = Math.floor(Math.random() * 9) + 1; // 1-9
+            let dividend;
+            
+            switch(difficulty) {
+                case 'easy':
+                    dividend = divisor * Math.floor(Math.random() * 100 + 100);
+                    break;
+                case 'medium':
+                    dividend = Math.floor(Math.random() * 900) + 100;
+                    break;
+                case 'hard':
+                    dividend = Math.floor(Math.random() * 900) + 100;
+                    break;
+            }
+            
+            return {
+                question: `${dividend} ÷ ${divisor} = ?`,
+                answer: (dividend / divisor).toFixed(difficulty === 'hard' ? 2 : 
+                                                    difficulty === 'medium' ? 1 : 0)
+            };
+        }
+
+        function startGame(level) {
+            difficulty = level;
+            currentLevel = 1;
+            stars = 0;
+            document.getElementById('stars').textContent = `⭐ × ${stars}`;
+            document.getElementById('message').textContent = '';
+            document.getElementById('answer').value = '';
+            currentProblem = generateProblem();
+            document.getElementById('question').textContent = currentProblem.question;
+        }
+
+        function submitAnswer() {
+            const userAnswer = parseFloat(document.getElementById('answer').value).toFixed(
+                difficulty === 'hard' ? 2 : 
+                difficulty === 'medium' ? 1 : 0
+            );
+            
+            if(Math.abs(userAnswer - currentProblem.answer) < 0.01) {
+                stars++;
+                currentLevel++;
+                document.getElementById('stars').textContent = `⭐ × ${stars}`;
+                document.getElementById('message').textContent = '✅ 正确！即将进入下一关...';
+                setTimeout(() => {
+                    if(currentLevel > 10) {
+                        alert('🎉 恭喜你找到宝藏！游戏胜利！');
+                        startGame(difficulty);
+                    } else {
+                        currentProblem = generateProblem();
+                        document.getElementById('question').textContent = currentProblem.question;
+                        document.getElementById('answer').value = '';
+                        document.getElementById('message').textContent = '';
+                    }
+                }, 1500);
+            } else {
+                document.getElementById('message').textContent = '❌ 答案错误，请再试一次！';
+            }
+        }
+
+        function retry() {
+            document.getElementById('answer').value = '';
+            document.getElementById('message').textContent = '';
+        }
+
+        // 初始化
+        document.getElementById('answer').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') submitAnswer();
+        });
+    </script>
+</body>
+</html>
+```
+
+**功能特点：**
+
+1. **三种难度模式：**
+   - 简单模式：保证整除
+   - 中等模式：允许1位小数
+   - 困难模式：允许2位小数
+
+2. **游戏机制：**
+   - 10个关卡设计
+   - 星星奖励系统
+   - 实时反馈提示
+   - 支持回车提交答案
+
+3. **视觉元素：**
+   - 太空背景主题
+   - 清晰的界面布局
+   - 动态分数显示
+   - 表情符号图标反馈
+
+**使用说明：**
+1. 选择难度级别开始游戏
+2. 在输入框输入答案（支持小数）
+3. 按回车或点击"提交答案"
+4. 收集星星通过关卡
+5. 通关10关后获得胜利
+
+**扩展建议：**
+1. 添加音效（正确/错误提示音）
+2. 增加飞船动画效果
+3. 添加本地存储保存最高记录
+4. 增加详细解题步骤提示
+5. 添加更多数学运算类型
+
+可以将代码保存为.html文件直接使用，也可以部署到网络服务器。所有计算在客户端完成，无需后端支持。
